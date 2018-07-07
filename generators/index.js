@@ -2,14 +2,26 @@
 const Generator = require('yeoman-generator');
 
 module.exports = class extends Generator {
-    prompting() {
-        this.log("Welcome!");
+    initializing() {
+        this.log("Installing Code Kata Environment for .net Core...");
     }
 
-    writing() {
-        this.fs.copy(
-            this.templatePath('./'),
-            this.destinationPath('./')
-        );
+    prompting() {
+        return this.prompt([{
+            type    : 'input',
+            name    : 'name',
+            message : 'Your project name',
+            default : "some-kata"
+          }]).then((answers) => {
+            this.appName = answers.name;
+            this.fs.copy(
+                this.templatePath(`./`),
+                this.destinationPath(`./${this.appName}/`)
+            );            
+          });
+    }
+
+    install() {
+        this.spawnCommandSync("dotnet", [`restore`, `./${this.appName}/tests/`]);
     }
 };
